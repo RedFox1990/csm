@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>CSM API Test</title>
+</head>
+<body>
+  <h2>Lokale CSM-API testen</h2>
+  <form id="ttsForm">
+    <label for="text">Text:</label>
+    <input type="text" id="text" name="text" value="Hallo, das ist ein Test." size="40">
+    <button type="submit">Senden</button>
+  </form>
+  <audio id="audio" controls style="margin-top:20px; display:none;"></audio>
+  <div id="status"></div>
+  <script>
+    document.getElementById('ttsForm').onsubmit = async function(e) {
+      e.preventDefault();
+      document.getElementById('status').textContent = 'Warte auf Antwort...';
+      const formData = new FormData();
+      formData.append('text', document.getElementById('text').value);
+      formData.append('speaker', 0);
+
+      const response = await fetch('http://localhost:8000/generate-audio', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const audio = document.getElementById('audio');
+        audio.src = URL.createObjectURL(blob);
+        audio.style.display = 'block';
+        audio.play();
+        document.getElementById('status').textContent = 'Audio generiert!';
+      } else {
+        document.getElementById('status').textContent = 'Fehler: ' + response.statusText;
+      }
+    };
+  </script>
+</body>
+</html> 

@@ -5,8 +5,17 @@ import torchaudio
 import torch
 import uuid
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Für Entwicklung: alle Domains erlauben
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
 generator = load_csm_1b(device=device)
 
